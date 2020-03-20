@@ -5,7 +5,7 @@
 The model takes a word as input and gives back an image representing that word.  
 
 #### The objective
-is being able to give the model a new word (a word of which he never saw a representation) and having it to return something interesting
+Is being able to give the model a new word (a word of which he never saw a representation) and having it to return something interesting
 
 ## How it does it
 
@@ -21,8 +21,12 @@ The more positive feedback the Generator recieves, the more it is able to create
 
 Both the Generator and the Discriminator recieve 2 inputs:
 
-- The Generator recieves a noise array + a word embedding
-- The Discriminator recieves an image + the word embedding of the image's label
+- The Generator recieves 
+    - a noise array
+    - a word embedding
+- The Discriminator recieves 
+    - an image 
+    - the word embedding of the image's label
 
 In this way the Generator can be given a word embedding to tell him what to produce, and the discriminator knows what to expect and classify.
 
