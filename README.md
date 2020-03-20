@@ -63,20 +63,20 @@ For example, when asked to produces images of the word *slipper*, it produces mo
 
 The reason becomes apparent looking at the similarity between the words of which the model has learned a representation:
 
-First word | Second word | Similarity
-:---------:|:-----------:|:-------------------:
-slipper    | shirts      | 0.23937399685382843
-slipper    | trousers    | 0.32302892208099365
-slipper    | pullover    | 0.4327770471572876
-slipper    | dress       | 0.31123432517051697
-slipper    | coat        | 0.3384299576282501
-slipper    | sandals     | 0.5171653628349304
-slipper    | shirt       | 0.3275615870952606
-slipper    | sneakers    | 0.4365991950035095
-slipper    | bag         | 0.4376913607120514
-slipper    | boots       | 0.40576016902923584
+Word         | Similarity with *slipper*
+:-----------:|:------------------------:
+ sandals     | 0.5171653628349304
+ bag         | 0.4376913607120514
+ sneakers    | 0.4365991950035095
+ pullover    | 0.4327770471572876
+ boots       | 0.40576016902923584
+ coat        | 0.3384299576282501
+ shirt       | 0.3275615870952606
+ trousers    | 0.32302892208099365
+ dress       | 0.31123432517051697
+ shirts      | 0.23937399685382843
 
-It is interesting to notice that the words *man* and *woman* produce as output respectively man's and woman's clothing:
+It is interesting to notice that the words *man* and *woman* mostly produce as output respectively man's and woman's clothing:
 
 man                    | woman
 :---------------------:|:---------------------------:
