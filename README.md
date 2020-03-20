@@ -21,4 +21,4 @@ Both the Generator and the Discriminator recieve 2 inputs:
 - The Generator recieves a noise array + a word embedding
 - The Discriminator recieves an image + the word embedding of the image's label
 
-In this wa
+In this way the Generator can be given a word embedding to tell him what to produce, and the discriminator knows what to expect and classify
