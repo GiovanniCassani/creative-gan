@@ -49,12 +49,17 @@ I decided to train the model on the [fashion mnist dataset](https://github.com/z
 
 The embedder model is a Word2Vec model trained on 200k articles of Wikipedia, and I used the library [gensim](https://github.com/RaRe-Technologies/gensim) for that.
 
-## How it performs
+## How it performs 
+
+I trained the model with 70000 iterations and a batch size of 32.
+
+This is the output when the input is *shirts*:
+![alt text](images/shirts.png)
 
 It can take as input any word, and will return images of the most similar words he learnt to represent.
 
 For example, when asked to produces images of the word *slipper*, it produces mostly shoes:
-![alt text](images/slipper.png)
+![slipper](images/slipper.png)
 
 The reason becomes apparent looking at the similarity between the words of which the model has learned a representation:
 
@@ -69,6 +74,11 @@ The reason becomes apparent looking at the similarity between the words of which
 - Similarity between slipper and bag: 0.4376913607120514
 - Similarity between slipper and boots: 0.40576016902923584
 
+It is interesting to notice the output of the words *man* and *woman* produce as output respectively man's and woman's clothing:
+
+man                    | woman
+:---------------------:|:---------------------------:
+![man](images/man.png) | ![woman](images/woman.png)
 
 ## How it can get better
 
