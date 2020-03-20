@@ -28,7 +28,7 @@ Both the Generator and the Discriminator recieve 2 inputs:
     - an image 
     - the word embedding of the image's label
 
-In this way the Generator can be given a word embedding to tell him what to produce, and the discriminator knows what to expect and classify.
+In this way the Generator can be given a word embedding to tell him what to produce, and the Discriminator knows what to expect and classify.
 
 ## Where it's trained
 
@@ -56,7 +56,7 @@ It can take as input any word, and will return images of the most similar words 
 For example, when asked to produces images of the word *slipper*, it produces mostly shoes:
 ![alt text](images/slipper.png)
 
-It becomes apparent looking at the similarity between the words of which the model has learned a representation:
+The reason becomes apparent looking at the similarity between the words of which the model has learned a representation:
 
 - Similarity between slipper and shirts: 0.23937399685382843
 - Similarity between slipper and trousers: 0.32302892208099365
