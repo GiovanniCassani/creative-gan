@@ -50,4 +50,20 @@ The embedder model is a Word2Vec model trained on 200k articles of Wikipedia, an
 
 It can take as input any word, and will return images of the most similar words he learnt to represent.
 
-For example
+For example, when asked to produces images of the word *slipper*, it produces mostly shoes:
+![alt text](images/slipper.png)
+
+It becomes apparent looking at the similarity between the words of which the model has learned a representation:
+
+- Similarity between slipper and shirts: 0.23937399685382843
+- Similarity between slipper and trousers: 0.32302892208099365
+- Similarity between slipper and pullover: 0.4327770471572876
+- Similarity between slipper and dress: 0.31123432517051697
+- Similarity between slipper and coat: 0.3384299576282501
+- Similarity between slipper and sandals: 0.5171653628349304
+- Similarity between slipper and shirt: 0.3275615870952606
+- Similarity between slipper and sneakers: 0.4365991950035095
+- Similarity between slipper and bag: 0.4376913607120514
+- Similarity between slipper and boots: 0.40576016902923584
+
+
