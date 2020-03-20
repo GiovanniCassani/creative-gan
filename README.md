@@ -1,5 +1,4 @@
-# creative_gan
-
+# Creative GAN
 
 ## What it does
 
@@ -29,20 +28,20 @@ In this way the Generator can be given a word embedding to tell him what to prod
 
 ## Where it's trained
 
-I decided to train the model on the [fashion mnist dataset](https://github.com/zalandoresearch/fashion-mnist), a dataset of black and white, 28x28 images in 10 categories:
+I decided to train the model on the [fashion mnist dataset](https://github.com/zalandoresearch/fashion-mnist), a dataset of black and white, 28x28 images in 10 categories (I've slightly modified the labels to make them more understandable by the Word2Vec model):
 
 | Label | Description |
 | --- | --- |
-| 0 | T-shirt/top |
-| 1 | Trouser |
-| 2 | Pullover |
-| 3 | Dress |
-| 4 | Coat |
-| 5 | Sandal |
-| 6 | Shirt |
-| 7 | Sneaker |
-| 8 | Bag |
-| 9 | Ankle boot |
+| 0 | shirts |
+| 1 | trousers |
+| 2 | pullover |
+| 3 | dress |
+| 4 | coat |
+| 5 | sandals |
+| 6 | shirt |
+| 7 | sneakers |
+| 8 | bag |
+| 9 | boots |
 
 The embedder model is a Word2Vec model trained on 200k articles of Wikipedia, and I used the library [gensim](https://github.com/RaRe-Technologies/gensim) for that.
 
@@ -65,5 +64,15 @@ It becomes apparent looking at the similarity between the words of which the mod
 - Similarity between slipper and sneakers: 0.4365991950035095
 - Similarity between slipper and bag: 0.4376913607120514
 - Similarity between slipper and boots: 0.40576016902923584
+
+## How it can get better
+
+- A better trained Word2Vec model could probably lead to more accurate results
+- A larger training set, with more categories, could bring more 'creativity'
+- A larger model, like [bigGAN](https://arxiv.org/abs/1809.11096) could substantially increase the quality of images
+
+## What it needs to get there
+
+More computational power :)
 
 
