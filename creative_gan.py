@@ -1,15 +1,12 @@
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-import numpy as np
-import matplotlib.pyplot as plt
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers  import LeakyReLU
-from tensorflow.keras.layers import BatchNormalization,  Embedding
-from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Dropout, multiply
 from tensorflow.keras.datasets import fashion_mnist as mnist
+from tensorflow.keras.layers import Dense, Reshape, Flatten, Dropout, multiply
+from tensorflow.keras.layers import Input, BatchNormalization,  Embedding
+from tensorflow.keras.layers import LeakyReLU
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.optimizers import Adam
 from gensim.models import Word2Vec
-
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class CGAN():
@@ -65,16 +62,14 @@ class CGAN():
         for word in vocab:
             indexed_words.append(self.word2vec.wv.vocab[word].index)
 
-
         return vocab, indexed_words
-
 
     def build_weights(self):
 
         weight_matrix = np.zeros((len(self.vocab), 100))
         # step vocab, store vectors using the Tokenizer's integer mapping
         for i, word in enumerate(self.vocab):
-            weight_matrix[i] = word2vec['word']
+            weight_matrix[i] = self.word2vec['word']
         return weight_matrix
 
     def build_generator(self):
@@ -99,7 +94,8 @@ class CGAN():
         label = Input(shape=(1,), dtype='int32')
         label_embedding = Flatten()(Embedding(self.embedded_dimension,
                                               self.latent_dim,
-                                              weights=[self.word2vec.wv.vectors],
+                                              weights=[
+                                                  self.word2vec.wv.vectors],
                                               trainable=False)(label))
 
         model_input = multiply([noise, label_embedding])
@@ -127,7 +123,8 @@ class CGAN():
 
         label_embedding = Flatten()(Embedding(self.embedded_dimension,
                                               self.latent_dim,
-                                              weights=[self.word2vec.wv.vectors],
+                                              weights=[
+                                                  self.word2vec.wv.vectors],
                                               trainable=False)(label))
         label_expansion = Dense(784)(label_embedding)
         flat_img = Flatten()(img)
@@ -147,9 +144,9 @@ class CGAN():
         X_train = (X_train.astype(np.float32) - 127.5) / 127.5
         X_train = np.expand_dims(X_train, axis=3)
 
-        for n, i in enumerate(self.index): 
-             y_train = np.where(y_train==n, i, y_train) 
-                                                             
+        for n, i in enumerate(self.index):
+            y_train = np.where(y_train == n, i, y_train)
+
         y_train = y_train.reshape(-1, 1)
 
         # Adversarial ground truths
@@ -165,7 +162,6 @@ class CGAN():
             # Select a random half batch of images
             idx = np.random.randint(0, X_train.shape[0], batch_size)
             imgs, labels = X_train[idx], y_train[idx]
-            
 
             # Sample noise as generator input
             noise = np.random.normal(0, 1, (batch_size, 100))
@@ -186,7 +182,7 @@ class CGAN():
 
             # Condition on labels
             sampled_labels = np.random.choice(self.index,
-                batch_size).reshape(-1, 1)
+                                              batch_size).reshape(-1, 1)
 
             # Train the generator
             g_loss = self.combined.train_on_batch(

@@ -5,7 +5,7 @@ import time
 if __name__ == "__main__":
 
     print("Importing Wikipedia")
-    wiki = WikiCorpus('data/en/enwiki-latest-pages-articles.xml.bz2', 
+    wiki = WikiCorpus('en/enwiki-latest-pages-articles.xml.bz2',
                       lemmatize=False, dictionary={})
 
     print("Getting sentences")
@@ -20,4 +20,3 @@ if __name__ == "__main__":
 
     end = time.time()
     print(end - start, ' seconds elapsed')
-
