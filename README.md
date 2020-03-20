@@ -69,6 +69,7 @@ The reason becomes apparent looking at the similarity between the words of which
 - Similarity between slipper and bag: 0.4376913607120514
 - Similarity between slipper and boots: 0.40576016902923584
 
+
 ## How it can get better
 
 - A better trained Word2Vec model could probably lead to more accurate results
