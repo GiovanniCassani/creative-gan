@@ -1,0 +1,4 @@
+word2vec/gensim*
+data/en
+data/*.txt
+generator*
