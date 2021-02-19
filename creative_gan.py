@@ -1,15 +1,21 @@
-from tensorflow.keras.datasets import fashion_mnist as mnist
-from tensorflow.keras.layers import Dense, Reshape, Flatten, Dropout, multiply
-from tensorflow.keras.layers import Input, BatchNormalization,  Embedding
-from tensorflow.keras.layers import LeakyReLU
-from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.optimizers import Adam
-from gensim.models import Word2Vec
+from tensorflow.python.keras.datasets import fashion_mnist as mnist
+from tensorflow.python.keras.layers import Dense, Reshape, Flatten, Dropout, multiply
+from tensorflow.python.keras.layers import Input, BatchNormalization,  Embedding
+from tensorflow.python.keras.layers import LeakyReLU
+from tensorflow.python.keras.models import Sequential, Model
+from tensorflow.python.keras.optimizer_v2.adam import Adam
+from word2vec.load_w2v import load_embeddings
+
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 
 class CGAN():
+    
     def __init__(self):
         # Input shape
         self.img_rows = 28
@@ -17,7 +23,9 @@ class CGAN():
         self.channels = 1
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
         self.latent_dim = 100
-        self.word2vec = Word2Vec.load('word2vec/gensim-wiki-model')
+        self.word2vec = load_embeddings(
+            '/home/gcassani/Resources/Embeddings/glove.6B/glove.6B.100d.txt'
+        )
         self.embedded_dimension = len(self.word2vec.wv.vocab)
         _, self.index = self.build_index()
 
@@ -51,7 +59,17 @@ class CGAN():
         self.combined.compile(loss=['binary_crossentropy'],
                               optimizer=optimizer)
 
+        print('Discriminator summary:')
+        self.discriminator.summary()
+
+        print('\nGenerator summary:')
+        self.generator.summary()
+
+        print('\nGAN summary:')
+        self.combined.summary()
+
     def build_index(self, training=True):
+
         vocab = ['shirts', 'trousers', 'pullover', 'dress',
                  'coat', 'sandals', 'shirt', 'sneakers', 'bag', 'boots']
         if not training:
@@ -64,6 +82,7 @@ class CGAN():
 
         return vocab, indexed_words
 
+    """
     def build_weights(self):
 
         weight_matrix = np.zeros((len(self.vocab), 100))
@@ -71,6 +90,7 @@ class CGAN():
         for i, word in enumerate(self.vocab):
             weight_matrix[i] = self.word2vec['word']
         return weight_matrix
+    """
 
     def build_generator(self):
 
@@ -87,8 +107,6 @@ class CGAN():
         model.add(BatchNormalization(momentum=0.8))
         model.add(Dense(np.prod(self.img_shape), activation='tanh'))
         model.add(Reshape(self.img_shape))
-
-        model.summary()
 
         noise = Input(shape=(self.latent_dim,))
         label = Input(shape=(1,), dtype='int32')
@@ -116,7 +134,6 @@ class CGAN():
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dropout(0.4))
         model.add(Dense(1, activation='sigmoid'))
-        model.summary()
 
         img = Input(shape=self.img_shape)
         label = Input(shape=(1,), dtype='int32')
@@ -188,12 +205,10 @@ class CGAN():
             g_loss = self.combined.train_on_batch(
                 [noise, sampled_labels], valid)
 
-            # Plot the progress
-            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" %
-                  (epoch, d_loss[0], 100*d_loss[1], g_loss))
-
-            # If at save interval => save generated image samples
+            # If at save interval => save generated image samples and print progress
             if epoch % sample_interval == 0:
+                print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" %
+                      (epoch, d_loss[0], 100 * d_loss[1], g_loss))
                 self.sample_images(epoch)
         self.generator.save('generator_{}_epochs.h5'.format(epochs))
 
@@ -216,10 +231,10 @@ class CGAN():
                 axs[i, j].set_title(vocab[cnt])
                 axs[i, j].axis('off')
                 cnt += 1
-        fig.savefig("images/%d.png" % epoch)
+        fig.savefig("images_training/%d.png" % epoch)
         plt.close()
 
 
 if __name__ == '__main__':
     cgan = CGAN()
-    cgan.train(epochs=70000, batch_size=32, sample_interval=200)
+    cgan.train(epochs=1000, batch_size=32, sample_interval=200)
