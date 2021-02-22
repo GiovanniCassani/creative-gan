@@ -1,4 +1,5 @@
 from tensorflow.python.keras.datasets import fashion_mnist as mnist
+from tensorflow.python.keras.datasets import cifar100 as cifar
 from tensorflow.python.keras.layers import Dense, Reshape, Flatten, Dropout, multiply
 from tensorflow.python.keras.layers import Input, BatchNormalization,  Embedding
 from tensorflow.python.keras.layers import LeakyReLU
@@ -26,6 +27,7 @@ class CGAN:
         """
 
         # Images
+        self.img_dataset = config_options['Images']['dataset']
         self.img_rows = int(config_options['Images']['rows'])
         self.img_cols = int(config_options['Images']['cols'])
         self.channels = int(config_options['Images']['channels'])
@@ -36,8 +38,10 @@ class CGAN:
         self.word_embeddings = load_embeddings(config_options['Embeddings']['file'])
         self.embeddings_dim = self.word_embeddings.vector_size
         self.embeddings_vocab = len(self.word_embeddings.vocab)
-        self.train_vocab = config_options['Embeddings']['train_vocab'].split(', ')
-        self.test_vocab = config_options['Embeddings']['test_vocab'].split(', ')
+        self.train_labels = self.read_labels(
+            os.path.join(os.getcwd(), 'data', config_options['Embeddings']['train_vocab'])
+        )
+        self.test_words = config_options['Embeddings']['test_vocab'].split(', ')
         _, self.index = self.build_index()
 
         # GAN
@@ -86,12 +90,18 @@ class CGAN:
         if not os.path.exists(self.image_folder):
             os.makedirs(self.image_folder)
 
+    def read_labels(self, path):
+
+        with open(path, 'r') as fin:
+            labels = [w.strip() for w in fin if not w.startswith('#')]
+        return labels
+
     def build_index(self, training=True):
 
-        target_words = deepcopy(self.train_vocab)
+        target_words = deepcopy(self.train_labels)
 
         if not training:
-            for w in self.test_vocab:
+            for w in self.test_words:
                 target_words.append(w)
 
         indexed_words = []
@@ -165,7 +175,7 @@ class CGAN:
         label_embedding = Flatten()(Embedding(
             self.embeddings_vocab, self.embeddings_dim, weights=[self.word_embeddings.vectors], trainable=False
         )(label))
-        label_expansion = Dense(self.img_rows*self.img_cols)(label_embedding)
+        label_expansion = Dense(self.img_rows*self.img_cols*self.channels)(label_embedding)
         flat_img = Flatten()(img)
 
         model_input = multiply([flat_img, label_expansion])
@@ -177,11 +187,22 @@ class CGAN:
     def train(self):
 
         # Load the dataset
-        (X_train, y_train), (_, _) = mnist.load_data()
+        if 'mnist' in self.img_dataset:
+            (X_train, y_train), (_, _) = mnist.load_data()
+        elif 'cifar' in self.img_dataset:
+            (X_train, y_train), (_, _) = cifar.load_data('fine')
+            X_train = X_train / 255.0
+            classes2labels = {c: l for c, l in enumerate(self.train_labels)}
+            labels2classes = {v: k for k, v in classes2labels.items()}
+        else:
+            raise ValueError(
+                "Unknown dataset {}! Please use either 'fasion_mnist' or 'cifar100'.".format(self.img_dataset)
+            )
 
         # Configure input
-        X_train = (X_train.astype(np.float32) - 127.5) / 127.5  # da dove vengono questi numeri?
-        X_train = np.expand_dims(X_train, axis=3)
+        X_train = (X_train.astype(np.float32) - 127.5) / 127.5
+        if self.channels == 1:
+            X_train = np.expand_dims(X_train, axis=3)
 
         for n, i in enumerate(self.index):
             y_train = np.where(y_train == n, i, y_train)
@@ -193,8 +214,6 @@ class CGAN:
         fake = np.zeros((self.batch_size, 1))
 
         for epoch in range(self.epochs):
-
-            print(self.train_vocab)
 
             # ---------------------
             #  Train Discriminator
@@ -246,8 +265,6 @@ class CGAN:
 
         r, c = self.output_image_grid
         vocab, extended_index = self.build_index(training=False)
-        print(self.train_vocab)
-        input("press enter")
         noise = np.random.normal(0, 1, (r * c, self.embeddings_dim))
         sampled_labels = np.asarray(extended_index).reshape(-1, 1)
 
