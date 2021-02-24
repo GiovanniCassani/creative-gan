@@ -90,6 +90,10 @@ class CGAN:
         if not os.path.exists(self.image_folder):
             os.makedirs(self.image_folder)
 
+        self.outfolder = config_options['GAN']['outfolder']
+        if not os.path.exists(self.outfolder):
+            os.makedirs(self.outfolder)
+
     def read_labels(self, path):
 
         with open(path, 'r') as fin:
@@ -201,8 +205,8 @@ class CGAN:
 
         # Configure input
         X_train = (X_train.astype(np.float32) - 127.5) / 127.5
-        if self.channels == 1:
-            X_train = np.expand_dims(X_train, axis=3)
+        # if self.channels == 1:
+        #     X_train = np.expand_dims(X_train, axis=3)
 
         for n, i in enumerate(self.index):
             y_train = np.where(y_train == n, i, y_train)
@@ -256,10 +260,12 @@ class CGAN:
     def save(self):
 
         self.discriminator.trainable = False
-        self.gan.save('gan_{}_epochs'.format(self.epochs))
+        self.gan.save(os.path.join(self.outfolder, 'gan_{}_epochs'.format(self.epochs)))
         self.discriminator.trainable = True
-        self.discriminator.save('discriminator_{}_epochs'.format(self.epochs))
-        self.generator.save('generator_{}_epochs'.format(self.epochs), include_optimizer=False)
+        self.discriminator.save(os.path.join(self.outfolder, 'discriminator_{}_epochs'.format(self.epochs)))
+        self.generator.save(
+            os.path.join(self.outfolder, 'generator_{}_epochs'.format(self.epochs)), include_optimizer=False
+        )
 
     def sample_images(self, epoch):
 
@@ -288,6 +294,6 @@ class CGAN:
 if __name__ == '__main__':
 
     config = configparser.ConfigParser()
-    config.read('GANconfig.ini')
+    config.read('GANconfig_mnist.ini')
     cgan = CGAN(config)
     cgan.train()

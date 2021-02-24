@@ -40,7 +40,7 @@ def generate_info(model, w):
 
 
 if __name__ == '__main__':
-    iters = 100
+    iters = 100000
     print('[*] Loading Models')
     word2vec = load_embeddings('/home/gcassani/Resources/Embeddings/glove.6B/glove.6B.100d.txt')
     generator = load_model('generator_{}_epochs'.format(iters))
