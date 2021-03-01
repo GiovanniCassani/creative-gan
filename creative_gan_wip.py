@@ -114,18 +114,6 @@ class CGAN:
 
         return target_words, indexed_words
 
-    """
-    Questa mi pare non serva e non capisco cosa debba fare:
-    
-    def build_weights(self):
-
-        weight_matrix = np.zeros((len(self.vocab), 100))
-        # step vocab, store vectors using the Tokenizer's integer mapping
-        for i, word in enumerate(self.vocab):
-            weight_matrix[i] = self.word2vec['word']
-        return weight_matrix
-    """
-
     def build_generator(self, config_gener):
 
         m = float(config_gener['momentum'])
@@ -197,7 +185,6 @@ class CGAN:
             (X_train, y_train), (_, _) = cifar.load_data('fine')
             X_train = X_train / 255.0
             classes2labels = {c: l for c, l in enumerate(self.train_labels)}
-            labels2classes = {v: k for k, v in classes2labels.items()}
         else:
             raise ValueError(
                 "Unknown dataset {}! Please use either 'fasion_mnist' or 'cifar100'.".format(self.img_dataset)
@@ -225,6 +212,8 @@ class CGAN:
 
             # Select a random half batch of images
             idx = np.random.randint(0, X_train.shape[0], self.batch_size)
+            # with np.random.randint we can pick the same image more than once: is this a feature or a bug?
+
             imgs, labels = X_train[idx], y_train[idx]
 
             # Sample noise as generator input
@@ -283,7 +272,10 @@ class CGAN:
         cnt = 0
         for i in range(r):
             for j in range(c):
-                axs[i, j].imshow(gen_imgs[cnt, :, :, 0], cmap='gray')
+                if self.channels == 1:
+                    axs[i, j].imshow(gen_imgs[cnt, :, :, 0], cmap='gray')
+                else:
+                    axs[i, j].imshow(gen_imgs[cnt, :, :, :])
                 axs[i, j].set_title(vocab[cnt])
                 axs[i, j].axis('off')
                 cnt += 1
@@ -294,6 +286,6 @@ class CGAN:
 if __name__ == '__main__':
 
     config = configparser.ConfigParser()
-    config.read('GANconfig_mnist.ini')
+    config.read('GANconfig_cifar.ini')
     cgan = CGAN(config)
     cgan.train()
